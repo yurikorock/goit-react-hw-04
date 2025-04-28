@@ -1,0 +1,38 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin-bottom: 24px;
+    gap: 15px;
+    border: 1px, solid, black;
+    border-radius: 10px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+}
+
+.label {
+    display: block;
+    text-align: left;
+
+}
+
+.errormsg {
+    color: #f55;
+
+}
+
+.btn {
+    padding: 10px;
+    background: gold;
+    color: #1a1a1a;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all .3s ease;
+}
