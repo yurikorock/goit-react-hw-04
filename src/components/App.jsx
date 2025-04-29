@@ -9,10 +9,14 @@ import SearchBar from "./SearchBar/SearchBar";
 import ImageGallery from "./ImageGallery/ImageGallery";
 import { fetchImagesByQuery } from "./helpers/unsplashApi.js";
 import Loader from "./Loader/Loader";
+import ErrorMessage from "./ErrorMessage/ErrorMessage";
 
 const App = () => {
-  const [query, setQuery] = useState("");
-  const [images, setImages] = useState([]);
+  const [query, setQuery] = useState(""); //стан запиту в інпуті
+  const [images, setImages] = useState([]); // стан галереї
+  const [error, setError] = useState(false); // стан HTTP запиту
+  const [isLoading, setIsLoading] = useState(false); //стан лоадера
+  const [errorMessage, setErrorMessage] = useState(""); // стан сповіщення про помилку завантаження зображень
 
   const handleSearch = (newSearch) => {
     setQuery(newSearch);
@@ -24,11 +28,17 @@ const App = () => {
     }
     const fetchImages = async () => {
       try {
+        setError(false);
+        setIsLoading(true);
         const data = await fetchImagesByQuery(query);
         setImages(data);
       } catch (error) {
+        setError(true);
+        setErrorMessage("Сталася помилка при завантаженні зображень");
         toast.error("Error fetching images");
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -40,8 +50,9 @@ const App = () => {
       <h1 className="title">Picture Search</h1>
       <SearchBar onSubmit={handleSearch} />
       <Toaster />
-      <ImageGallery images={images} />
-      <Loader />
+      {error && <ErrorMessage message={errorMessage} />}
+      {isLoading && <Loader />}
+      {!error && !isLoading && <ImageGallery images={images} />}
     </div>
   );
 };
