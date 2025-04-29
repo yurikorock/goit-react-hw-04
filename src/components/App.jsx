@@ -8,6 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 import SearchBar from "./SearchBar/SearchBar";
 import ImageGallery from "./ImageGallery/ImageGallery";
 import { fetchImagesByQuery } from "./helpers/unsplashApi.js";
+import Loader from "./Loader/Loader";
 
 const App = () => {
   const [query, setQuery] = useState("");
@@ -40,6 +41,7 @@ const App = () => {
       <SearchBar onSubmit={handleSearch} />
       <Toaster />
       <ImageGallery images={images} />
+      <Loader />
     </div>
   );
 };

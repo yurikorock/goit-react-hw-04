@@ -18,7 +18,6 @@ export default function SearchBar({ onSubmit }) {
     event.currentTarget.reset();
 
     onSubmit(search);
-    setQuery("");
   };
 
   return (
