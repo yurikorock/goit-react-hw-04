@@ -4,17 +4,19 @@ import { useState, useEffect } from "react";
 import reactLogo from "../assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-
+import SearchBar from "./SearchBar/SearchBar";
 
 const App = () => {
-  
+  const [query, setQuery] = useState();
+
+  const handleSearch = (newSearch) => {
+    console.log(newSearch);
+  };
 
   return (
     <div>
-      <h1 className="title">Phonebook</h1>
-      <ContactForm onAdd={addContact} />
-      <SearchBox value={search} onSearch={setSearch} />
-      <ContactList contacts={filterContacts} onDelete={deleteContact} />
+      <h1 className="title">Picture Search</h1>
+      <SearchBar onSubmit={handleSearch} />
     </div>
   );
 };
