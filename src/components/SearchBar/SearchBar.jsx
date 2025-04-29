@@ -2,8 +2,6 @@ import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function SearchBar({ onSubmit }) {
-  const [query, setQuery] = useState("");
-
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
