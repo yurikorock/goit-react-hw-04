@@ -1,6 +1,6 @@
 //App.jsx
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import reactLogo from "../assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -18,7 +18,8 @@ const App = () => {
   const [error, setError] = useState(false); // стан HTTP запиту
   const [isLoading, setIsLoading] = useState(false); //стан лоадера
   const [errorMessage, setErrorMessage] = useState(""); // стан сповіщення про помилку завантаження зображень
-  const [page, setPage] = useState(1); // стан сторінки зображень
+  const [page, setPage] = useState(1); // стан поточної сторінки зображень
+  const loadMoreBtnRef = useRef(null);
 
   const handleSearch = (newSearch) => {
     setQuery(newSearch);
@@ -27,23 +28,16 @@ const App = () => {
   };
 
   const handleLoadMore = async () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    setIsLoading(true);
-    try {
-      const data = await fetchImagesByQuery(query, nextPage);
-      setImages((prevImages) => [...prevImages, ...data]);
-      if (data.length === 0) {
-        toast.error("No more images to load!");
-      }
-    } catch (error) {
-      setError(true);
-      setErrorMessage("Сталася помилка при завантаженні зображень!");
-      toast.error("Error fetching images");
-    } finally {
-      setIsLoading(false);
-    }
+    setPage((prevPage) => prevPage + 1);
   };
+  useEffect(() => {
+    if (images.length > 0 && loadMoreBtnRef.current) {
+      loadMoreBtnRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [images]);
 
   useEffect(() => {
     if (!query) {
@@ -54,6 +48,9 @@ const App = () => {
         setError(false);
         setIsLoading(true);
         const data = await fetchImagesByQuery(query, page);
+        if (data.length === 0 && page === 1) {
+          toast.error("Зображення не знайдено");
+        }
         setImages((prevImages) => [...prevImages, ...data]);
       } catch (error) {
         setError(true);
@@ -77,7 +74,7 @@ const App = () => {
       {isLoading && <Loader />}
       {!error && !isLoading && <ImageGallery images={images} />}
       {images.length > 0 && !isLoading && (
-        <LoadMoreBtn onClick={handleLoadMore} />
+        <LoadMoreBtn onClick={handleLoadMore} ref={loadMoreBtnRef} />
       )}
     </div>
   );
