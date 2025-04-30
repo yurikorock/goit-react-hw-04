@@ -20,11 +20,13 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(""); // стан сповіщення про помилку завантаження зображень
   const [page, setPage] = useState(1); // стан поточної сторінки зображень
   const loadMoreBtnRef = useRef(null);
+  const [hasMoreImage, setHasMoreImage] = useState(true);
 
   const handleSearch = (newSearch) => {
     setQuery(newSearch);
     setPage(1);
     setImages([]);
+    setHasMoreImage(true);
   };
 
   const handleLoadMore = async () => {
@@ -48,8 +50,12 @@ const App = () => {
         setError(false);
         setIsLoading(true);
         const data = await fetchImagesByQuery(query, page);
-        if (data.length === 0 && page === 1) {
-          toast.error("Зображення не знайдено");
+        if (data.length === 0) {
+          setHasMoreImage(false);
+          if (page === 1) {
+            toast.error("Зображення не знайдено");
+          }
+          return;
         }
         setImages((prevImages) => [...prevImages, ...data]);
       } catch (error) {
@@ -73,7 +79,7 @@ const App = () => {
       {error && <ErrorMessage message={errorMessage} />}
       {isLoading && <Loader />}
       {!error && !isLoading && <ImageGallery images={images} />}
-      {images.length > 0 && !isLoading && (
+      {images.length > 0 && !isLoading && hasMoreImage && (
         <LoadMoreBtn onClick={handleLoadMore} ref={loadMoreBtnRef} />
       )}
     </div>
