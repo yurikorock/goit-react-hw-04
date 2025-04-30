@@ -26,8 +26,23 @@ const App = () => {
     setImages([]);
   };
 
-  const handleLoadMore = () => {
-    setPage((page) => page + 1);
+  const handleLoadMore = async () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    setIsLoading(true);
+    try {
+      const data = await fetchImagesByQuery(query, nextPage);
+      setImages((prevImages) => [...prevImages, ...data]);
+      if (data.length === 0) {
+        toast.error("No more images to load!");
+      }
+    } catch (error) {
+      setError(true);
+      setErrorMessage("Сталася помилка при завантаженні зображень!");
+      toast.error("Error fetching images");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -42,7 +57,7 @@ const App = () => {
         setImages((prevImages) => [...prevImages, ...data]);
       } catch (error) {
         setError(true);
-        setErrorMessage("Сталася помилка при завантаженні зображень");
+        setErrorMessage("Сталася помилка при завантаженні зображень!");
         toast.error("Error fetching images");
         console.error(error);
       } finally {
