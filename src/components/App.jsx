@@ -10,6 +10,7 @@ import ImageGallery from "./ImageGallery/ImageGallery";
 import { fetchImagesByQuery } from "./helpers/unsplashApi.js";
 import Loader from "./Loader/Loader";
 import ErrorMessage from "./ErrorMessage/ErrorMessage";
+import LoadMoreBtn from "./LoadMoreBtn/LoadMoreBtn.jsx";
 
 const App = () => {
   const [query, setQuery] = useState(""); //стан запиту в інпуті
@@ -17,9 +18,16 @@ const App = () => {
   const [error, setError] = useState(false); // стан HTTP запиту
   const [isLoading, setIsLoading] = useState(false); //стан лоадера
   const [errorMessage, setErrorMessage] = useState(""); // стан сповіщення про помилку завантаження зображень
+  const [page, setPage] = useState(1); // стан сторінки зображень
 
   const handleSearch = (newSearch) => {
     setQuery(newSearch);
+    setPage(1);
+    setImages([]);
+  };
+
+  const handleLoadMore = () => {
+    setPage((page) => page + 1);
   };
 
   useEffect(() => {
@@ -30,8 +38,8 @@ const App = () => {
       try {
         setError(false);
         setIsLoading(true);
-        const data = await fetchImagesByQuery(query);
-        setImages(data);
+        const data = await fetchImagesByQuery(query, page);
+        setImages((prevImages) => [...prevImages, ...data]);
       } catch (error) {
         setError(true);
         setErrorMessage("Сталася помилка при завантаженні зображень");
@@ -43,7 +51,7 @@ const App = () => {
     };
 
     fetchImages();
-  }, [query]);
+  }, [query, page]);
 
   return (
     <div>
@@ -53,6 +61,9 @@ const App = () => {
       {error && <ErrorMessage message={errorMessage} />}
       {isLoading && <Loader />}
       {!error && !isLoading && <ImageGallery images={images} />}
+      {images.length > 0 && !isLoading && (
+        <LoadMoreBtn onClick={handleLoadMore} />
+      )}
     </div>
   );
 };
