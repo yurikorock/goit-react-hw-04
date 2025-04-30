@@ -11,6 +11,9 @@ import { fetchImagesByQuery } from "./helpers/unsplashApi.js";
 import Loader from "./Loader/Loader";
 import ErrorMessage from "./ErrorMessage/ErrorMessage";
 import LoadMoreBtn from "./LoadMoreBtn/LoadMoreBtn.jsx";
+import Modal from "react-modal";
+import ImageModal from "./ImageModal/ImageModal";
+Modal.setAppElement("#root");
 
 const App = () => {
   const [query, setQuery] = useState(""); //стан запиту в інпуті
@@ -21,6 +24,8 @@ const App = () => {
   const [page, setPage] = useState(1); // стан поточної сторінки зображень
   const loadMoreBtnRef = useRef(null);
   const [hasMoreImage, setHasMoreImage] = useState(true);
+  const [isModalOpen, setModalOpen] = useState(false); //стан модального вікна
+  const [selectedImage, setSelectedImage] = useState(null); //стан вибраного зображення
 
   const handleSearch = (newSearch) => {
     setQuery(newSearch);
@@ -32,6 +37,18 @@ const App = () => {
   const handleLoadMore = async () => {
     setPage((prevPage) => prevPage + 1);
   };
+
+  const openModal = (imageUrl) => {
+    if (imageUrl !== selectedImage && !isModalOpen) {
+      setSelectedImage(imageUrl);
+      setModalOpen(true);
+    }
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedImage(null);
+  };
+
   useEffect(() => {
     if (images.length > 0 && loadMoreBtnRef.current) {
       loadMoreBtnRef.current.scrollIntoView({
@@ -78,9 +95,18 @@ const App = () => {
       <Toaster />
       {error && <ErrorMessage message={errorMessage} />}
       {isLoading && <Loader />}
-      {!error && !isLoading && <ImageGallery images={images} />}
+      {!error && !isLoading && (
+        <ImageGallery images={images} onImageClick={openModal} />
+      )}
       {images.length > 0 && !isLoading && hasMoreImage && (
         <LoadMoreBtn onClick={handleLoadMore} ref={loadMoreBtnRef} />
+      )}
+      {isModalOpen && (
+        <ImageModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          imageUrl={selectedImage}
+        />
       )}
     </div>
   );
