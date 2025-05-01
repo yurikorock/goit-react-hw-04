@@ -95,7 +95,7 @@ const App = () => {
       )}
       {isLoading && <Loader />}
       {images.length > 0 && !isLoading && hasMoreImage && (
-        <LoadMoreBtn onClick={handleLoadMore} ref={loadMoreBtnRef} />
+        <LoadMoreBtn onClick={handleLoadMore} innerRef={loadMoreBtnRef} />
       )}
 
       <ImageModal
